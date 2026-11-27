@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png"  href="{{ url_for('static', filename='images/favicon.png') }}"><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script></head>
 <body><div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
 {% if current_user.is_authenticated %}
-<aside class="sidebar"><a class="brand" href="{{ url_for('web.dashboard') }}"><span class="brand-mark">C</span><span>Carbon<span class="brand-light">Track</span></span></a>
+<aside class="sidebar"> <a class="brand" href="{{ url_for('web.dashboard') }}"> <img src="{{ url_for('static', filename='images/logo.png') }}" alt="CarbonTrack" class="brand-image"><span>Carbon<span class="brand-light">Tracker</span></span></a>
 <div class="side-label">WORKSPACE</div><nav class="nav-main">
 <a href="{{ url_for('web.dashboard') }}"><i>◫</i><span>Overview</span></a><a href="{{ url_for('web.activities') }}"><i>↗</i><span>Activities</span></a><a href="{{ url_for('web.devices') }}"><i>⌘</i><span>Devices & agents</span></a><a href="{{ url_for('web.analytics') }}"><i>▥</i><span>Analytics</span></a><a href="{{ url_for('web.goals') }}"><i>◎</i><span>Goals</span></a><a href="{{ url_for('web.achievements') }}"><i>✧</i><span>Achievements</span></a><a href="{{ url_for('web.reports') }}"><i>▤</i><span>Reports</span></a></nav>
 <div class="side-label">ACCOUNT</div><nav><a href="{{ url_for('web.settings') }}"><i>⚙</i><span>Settings</span></a>{% if current_user.role in ['admin','institution'] %}<a href="{{ url_for('web.institution') }}"><i>▦</i><span>Institution</span></a>{% endif %}{% if current_user.role=='admin' %}<a href="{{ url_for('web.admin') }}"><i>♙</i><span>Administration</span></a>{% endif %}</nav>
