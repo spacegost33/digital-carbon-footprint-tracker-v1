@@ -1,0 +1,11 @@
+DEPLOYMENT CHECKLIST
+- [ ] Back up Neon before changing the live service.
+- [ ] Confirm Render DATABASE_URL is the intended Neon database.
+- [ ] Confirm SECRET_KEY is set and not committed.
+- [ ] Confirm COOKIE_SECURE=true on HTTPS.
+- [ ] Confirm /health returns HTTP 200 and database=connected.
+- [ ] Test registration/login/logout and CSRF-protected forms.
+- [ ] Test activity creation, factor calculation and ownership isolation.
+- [ ] Test device enrollment, telemetry and token revocation.
+- [ ] Test PDF/CSV exports and mobile layout.
+- [ ] Review Render logs after deployment; keep rollback deployment available.
