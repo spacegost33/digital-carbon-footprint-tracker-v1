@@ -4,7 +4,8 @@
 <title>{% block title %}{{ app_name }}{% endblock %}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}"><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script></head>
+<link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}">
+<link rel="icon" type="image/png"  href="{{ url_for('static', filename='images/favicon.png') }}"><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script></head>
 <body><div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
 {% if current_user.is_authenticated %}
 <aside class="sidebar"><a class="brand" href="{{ url_for('web.dashboard') }}"><span class="brand-mark">C</span><span>Carbon<span class="brand-light">Track</span></span></a>
