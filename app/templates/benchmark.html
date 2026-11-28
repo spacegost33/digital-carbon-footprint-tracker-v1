@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block heading %}Algorithm benchmarking{% endblock %}
+{% block content %}
+<div class="welcome-row">
+    <div><div class="eyebrow">COMPUTATIONAL EFFICIENCY</div><h2>Compare algorithms.</h2>
+        <p class="muted">Run controlled Python workloads on the server and compare actual timing and estimated emissions.</p></div>
+</div>
+<div class="two-col align-start">
+    <article class="panel glass-3d">
+        <span class="eyebrow">CONFIGURE WORKLOAD</span><h3>Run a benchmark</h3>
+        <form method="post" action="{{ url_for('benchmark.run') }}" class="stack">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>Workload<select name="kind"><option value="sorting">Sorting — Bubble / Merge / Quick</option><option value="searching">Searching — Linear / Binary</option></select></label>
+            <label>Input size (100–2000 items)<input name="size" type="number" min="100" max="2000" step="1" value="1000" required></label>
+            <label>Assumed average power (watts)<input name="watts" type="number" min="0.001" max="1000" step="any" placeholder="Enter an assumption, e.g. 30" required></label>
+            <button class="btn primary">Run comparison →</button>
+        </form>
+    </article>
+    <article class="panel">
+        <span class="eyebrow">MEASUREMENT BASIS</span><h3>Comparable, not fabricated.</h3>
+        <p>Each algorithm uses the same input and is timed three times. The median wall and CPU times are recorded. Memory is peak traced Python allocation from a separate pass; it is not whole-process RAM.</p>
+        <p>Searching uses the same pre-sorted data and 500 queries per trial. Preparation and sorting costs are excluded.</p>
+        <div class="factor">{{ factor }} <small>kg CO₂e/kWh (configured factor)</small></div>
+        <p class="muted small">Energy = assumed W × median wall seconds / 3,600,000. This is a model, not a hardware measurement or verified Render-specific carbon factor. Workloads execute on the server and are excluded from personal emissions totals.</p>
+    </article>
+</div>
+{% if result %}
+<div class="metric-grid">
+    <article class="metric"><span>FASTEST IN THIS RUN</span><strong>{{ result.fastest }}</strong><p>Based on median wall time</p></article>
+    <article class="metric"><span>TIME SAVING</span><strong>{{ '%.2f'|format(result.time_saving_pct) }}<small>%</small></strong><p>Fastest vs. slowest in this run</p></article>
+    <article class="metric"><span>INPUT SIZE</span><strong>{{ result.size }}</strong><p>{{ result.operations }} operation(s) per trial</p></article>
+    <article class="metric"><span>TRIALS PER ALGORITHM</span><strong>{{ result.repeats }}</strong><p>Median timing</p></article>
+</div>
+<article class="panel">
+    <div class="panel-head"><h3>{{ result.kind|title }} results</h3><span class="pill">ESTIMATED ENERGY</span></div>
+    <p class="muted small">Assumed {{ result.assumed_watts }} W · factor {{ result.factor }} kg CO₂e/kWh. Small differences may reflect timing noise.</p>
+    <div class="table-wrap"><table><thead><tr><th>Algorithm</th><th>Wall ms</th><th>CPU ms</th><th>Peak Python KiB</th><th>Energy (Wh)</th><th>CO₂e (mg)</th></tr></thead><tbody>
+        {% for r in result.rows %}<tr><td>{{ r.name }}</td><td>{{ '%.5f'|format(r.wall_ms) }}</td><td>{{ '%.5f'|format(r.cpu_ms) }}</td><td>{{ '%.3f'|format(r.peak_bytes/1024) }}</td><td>{{ '%.8f'|format(r.energy_kwh*1000) }}</td><td>{{ '%.6f'|format(r.carbon_kg*1000000) }}</td></tr>{% endfor %}
+    </tbody></table></div>
+    <h3>Execution time comparison</h3>
+    {% for r in result.rows %}<div class="goal-row"><div><b>{{ r.name }}</b><p class="muted small">{{ '%.5f'|format(r.wall_ms) }} ms</p></div><div class="progress"><span data-progress="{{ r.wall_ms/result.rows[-1].wall_ms*100 if result.rows[-1].wall_ms > 0 else 0 }}"></span></div></div>{% endfor %}
+    <p class="muted">With the same power assumption, a shorter runtime implies less estimated energy. Choose algorithms based on correctness, time, memory and actual workload characteristics.</p>
+</article>
+{% endif %}
+<article class="panel">
+    <div class="panel-head"><h3>Your benchmark history</h3><span class="pill">LATEST 30</span></div>
+    {% if history %}<div class="table-wrap"><table><thead><tr><th>UTC time</th><th>Workload</th><th>Input</th><th>Fastest</th><th></th></tr></thead><tbody>
+    {% for row, data in history %}<tr><td>{{ row.created_at.strftime('%d %b %Y %H:%M') }}</td><td>{{ data.kind|title }}</td><td>{{ data.size }}</td><td>{{ data.fastest }}</td><td><a href="{{ url_for('benchmark.overview', run=row.id) }}">View →</a></td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="empty">Run a benchmark to start your history.</div>{% endif %}
+</article>
+{% endblock %}

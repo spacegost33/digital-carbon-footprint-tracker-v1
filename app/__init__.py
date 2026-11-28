@@ -58,6 +58,8 @@ def create_app(test_config=None):
     app.register_blueprint(api)
     from .intelligence import intelligence
     app.register_blueprint(intelligence)
+    from .benchmark import benchmark
+    app.register_blueprint(benchmark)
 
     @app.get("/health")
     def health():
@@ -89,7 +91,13 @@ def create_app(test_config=None):
     with app.app_context():
         # create_all is additive: it creates missing tables but does not drop or rewrite
         # existing tables/records. Model changes still require reviewed migrations.
-        db.create_all()
+        with db.engine.begin() as connection:
+            if connection.dialect.name == "postgresql":
+                connection.execute(
+                    text("SELECT pg_advisory_xact_lock(73192026)")
+                )
+
+            db.metadata.create_all(bind=connection)
         if not models.EmissionFactor.query.filter_by(region="IN-KA", active=True).first():
             db.session.add(models.EmissionFactor(
                 region="IN-KA", name="Karnataka grid starter estimate", kg_per_kwh=0.70,
