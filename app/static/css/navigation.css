@@ -1,0 +1,47 @@
+/* Loaded after app.css: compact, scrollable desktop navigation. */
+.sidebar { padding: 18px 13px; overflow: hidden; }
+.sidebar .brand { flex: 0 0 auto; margin: 0 0 18px 3px; }
+.sidebar .ct-nav-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #365341 transparent; padding: 0 3px 8px; }
+.sidebar .side-label { margin: 0 0 9px 8px; }
+.sidebar nav.ct-nav { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.sidebar .ct-nav a, .sidebar .ct-nav summary { color: #a0b2a5; padding: 9px 9px; border-radius: 9px; display: flex; align-items: center; gap: 9px; font-size: 12px; line-height: 1.4; border: 1px solid transparent; min-height: 40px; text-decoration: none; }
+.sidebar .ct-nav a i, .sidebar .ct-nav summary i { font-style: normal; font-size: 16px; color: #8aa394; width: 18px; text-align: center; flex: 0 0 18px; }
+.sidebar .ct-nav summary { cursor: pointer; list-style: none; user-select: none; }
+.sidebar .ct-nav summary::-webkit-details-marker { display: none; }
+.sidebar .ct-nav summary > span:not(.ct-chevron), .sidebar .ct-nav a > span { min-width: 0; overflow-wrap: anywhere; }
+.sidebar .ct-nav summary > span:not(.ct-chevron) { flex: 1; }
+.sidebar .ct-nav summary:hover, .sidebar .ct-nav-group[open] > summary { color: var(--mint, #8ce76c); background: #1a2e21; border-color: #35523d; }
+.sidebar .ct-nav a:hover, .sidebar .ct-nav a:focus { transform: none; }
+.sidebar .ct-nav a.ct-nav-active { background: #26452e; color: #a4ee7b; border-color: #48734a; font-weight: 700; }
+.sidebar .ct-nav a:focus-visible, .sidebar .ct-nav summary:focus-visible, .ct-menu-toggle:focus-visible, .ct-menu-close:focus-visible { outline: 2px solid #a4ee7b; outline-offset: -2px; }
+.ct-chevron { width: 7px; height: 7px; margin: 0 3px 3px 0; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); flex: 0 0 7px; }
+.ct-nav-group[open] > summary .ct-chevron { transform: rotate(225deg); margin-bottom: -3px; }
+.ct-nav-children { margin: 3px 0 3px 16px; padding-left: 6px; border-left: 1px solid #304b36; }
+.sidebar .ct-nav .ct-nav-children a { font-size: 11px; min-height: 36px; padding: 7px 8px; }
+.sidebar .sidebar-bottom { flex: 0 0 auto; margin-top: 8px; padding-top: 12px; }
+.ct-menu-toggle, .ct-menu-close, .ct-menu-backdrop { display: none; }
+.ct-menu-toggle, .ct-menu-close { color: #dbe9df; background: #1c3023; border: 1px solid #37513d; border-radius: 8px; padding: 8px 11px; font: inherit; cursor: pointer; }
+@media (max-width: 900px) {
+    /* No-JS fallback: a normal, visible navigation block above the content. */
+    .sidebar { position: relative; inset: auto; width: 100%; height: auto; max-height: none; display: flex; background: #0e1b12; border-right: 0; border-top: 0; border-bottom: 1px solid var(--border); }
+    .sidebar .brand { display: flex; }
+    .sidebar .side-label { display: block; }
+    .sidebar .sidebar-bottom { display: flex; }
+    .main, .main.public-main { margin-left: 0; padding-bottom: 0; min-width: 0; }
+    .topbar { flex-wrap: wrap; gap: 8px; }
+    .topbar > div { min-width: 0; }
+    .top-actions { flex-wrap: wrap; gap: 8px; }
+    .ct-nav-ready .sidebar { position: fixed; z-index: 50; inset: 0 auto 0 0; width: min(300px, 88vw); height: 100vh; height: 100dvh; max-height: none; padding: 16px 13px max(16px, env(safe-area-inset-bottom)); border-right: 1px solid var(--border); border-bottom: 0; visibility: hidden; transform: translateX(-105%); transition: transform .22s ease, visibility .22s; }
+    .ct-nav-ready.ct-menu-open .sidebar { visibility: visible; transform: translateX(0); }
+    .ct-nav-ready .ct-menu-toggle { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 8px; }
+    .ct-nav-ready .ct-menu-close { display: block; align-self: flex-end; flex: 0 0 auto; margin: 0 0 12px; }
+    .ct-nav-ready .ct-menu-backdrop { display: block; position: fixed; z-index: 49; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: rgba(0,0,0,.65); cursor: pointer; }
+    .ct-menu-backdrop[hidden] { display: none !important; }
+    body.ct-menu-open { overflow: hidden; }
+}
+@media (max-height: 680px) and (min-width: 901px) {
+    .sidebar { padding-top: 12px; padding-bottom: 12px; }
+    .sidebar .brand { margin-bottom: 10px; }
+    .sidebar .ct-nav a, .sidebar .ct-nav summary { padding-top: 6px; padding-bottom: 6px; min-height: 34px; }
+}
+@media (prefers-reduced-motion: reduce) { .sidebar { transition: none !important; } }

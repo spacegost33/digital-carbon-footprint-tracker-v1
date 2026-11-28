@@ -1,0 +1,64 @@
+{% macro nav_link(endpoint, icon, label, active=false) -%}
+<a href="{{ url_for(endpoint) }}"{% if active %} class="ct-nav-active" aria-current="page"{% endif %}>
+    <i aria-hidden="true">{{ icon }}</i><span>{{ label }}</span>
+</a>
+{%- endmacro %}
+{% set ep = request.endpoint or '' %}
+{% set device_active = ep in ['web.devices', 'web.estimate_device', 'web.download_agent', 'web.revoke_device', 'energy_tools.devices', 'energy_tools.snapshot'] %}
+{% set carbon_active = ep in ['web.activities', 'web.analytics'] or ep.startswith('intelligence.') %}
+{% set optimization_active = ep.startswith('benchmark.') or ep == 'energy_tools.optimizer' %}
+{% set goals_active = ep in ['web.goals', 'web.achievements'] %}
+{% set reports_active = ep.startswith('web.report') or ep in ['web.admin', 'web.institution', 'web.add_factor'] %}
+<div class="ct-nav-scroll">
+    <div class="side-label">WORKSPACE</div>
+    <nav class="ct-nav" aria-label="Workspace navigation">
+        {{ nav_link('web.dashboard', '◫', 'Overview', ep == 'web.dashboard') }}
+        <details class="ct-nav-group" name="ct-workspace"{% if device_active %} open{% endif %}>
+            <summary><i aria-hidden="true">⌘</i><span>Device management</span><span class="ct-chevron" aria-hidden="true"></span></summary>
+            <div class="ct-nav-children">
+                {{ nav_link('web.devices', '⌘', 'Devices & agents', ep == 'web.devices') }}
+                {{ nav_link('energy_tools.devices', '◉', 'Device intelligence', ep == 'energy_tools.devices') }}
+            </div>
+        </details>
+        <details class="ct-nav-group" name="ct-workspace"{% if carbon_active %} open{% endif %}>
+            <summary><i aria-hidden="true">▥</i><span>Carbon & analytics</span><span class="ct-chevron" aria-hidden="true"></span></summary>
+            <div class="ct-nav-children">
+                {{ nav_link('web.activities', '↗', 'Activities', ep == 'web.activities') }}
+                {{ nav_link('web.analytics', '▥', 'Analytics', ep == 'web.analytics') }}
+                {{ nav_link('intelligence.overview', '✧', 'Carbon intelligence', ep.startswith('intelligence.')) }}
+            </div>
+        </details>
+        <details class="ct-nav-group" name="ct-workspace"{% if optimization_active %} open{% endif %}>
+            <summary><i aria-hidden="true">⚡</i><span>Optimization</span><span class="ct-chevron" aria-hidden="true"></span></summary>
+            <div class="ct-nav-children">
+                {{ nav_link('benchmark.overview', '⇄', 'Benchmarking', ep.startswith('benchmark.')) }}
+                {{ nav_link('energy_tools.optimizer', '⚡', 'Energy optimizer', ep == 'energy_tools.optimizer') }}
+            </div>
+        </details>
+        <details class="ct-nav-group" name="ct-workspace"{% if goals_active %} open{% endif %}>
+            <summary><i aria-hidden="true">◎</i><span>Goals & progress</span><span class="ct-chevron" aria-hidden="true"></span></summary>
+            <div class="ct-nav-children">
+                {{ nav_link('web.goals', '◎', 'Goals', ep == 'web.goals') }}
+                {{ nav_link('web.achievements', '✧', 'Achievements', ep == 'web.achievements') }}
+            </div>
+        </details>
+        <details class="ct-nav-group" name="ct-workspace"{% if reports_active %} open{% endif %}>
+            <summary><i aria-hidden="true">▤</i><span>Reports & management</span><span class="ct-chevron" aria-hidden="true"></span></summary>
+            <div class="ct-nav-children">
+                {{ nav_link('web.reports', '▤', 'Reports', ep.startswith('web.report')) }}
+                {% if current_user.role in ['admin', 'institution'] %}
+                    {{ nav_link('web.institution', '▦', 'Institution', ep == 'web.institution') }}
+                {% endif %}
+                {% if current_user.role == 'admin' %}
+                    {{ nav_link('web.admin', '♙', 'Administration', ep in ['web.admin', 'web.add_factor']) }}
+                {% endif %}
+            </div>
+        </details>
+        <details class="ct-nav-group" name="ct-workspace"{% if ep == 'web.settings' %} open{% endif %}>
+            <summary><i aria-hidden="true">⚙</i><span>Account</span><span class="ct-chevron" aria-hidden="true"></span></summary>
+            <div class="ct-nav-children">
+                {{ nav_link('web.settings', '⚙', 'Settings', ep == 'web.settings') }}
+            </div>
+        </details>
+    </nav>
+</div>
