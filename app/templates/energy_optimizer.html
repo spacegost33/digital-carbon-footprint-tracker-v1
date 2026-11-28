@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block heading %}Energy optimizer{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/energy_tools.css') }}">
+<div class="welcome-row"><div><span class="eyebrow">ENERGY SAVINGS / SCENARIO PLANNING</span><h2>Make reduction measurable.</h2><p class="muted">Estimate how reducing daily usage could affect energy, carbon and electricity costs.</p></div><a class="btn ghost" href="{{ url_for('energy_tools.devices',tariff=tariff) }}">← Device intelligence</a></div>
+<div class="two-col align-start"><article class="panel glass-3d"><h3>Configure savings scenario</h3><form method="get" action="{{ url_for('energy_tools.optimizer') }}" class="stack">
+<label>Average operating power (W)<input type="number" name="watts" min="0.001" max="10000" step="any" required value="{{ inputs.watts }}"></label>
+<label>Current operating hours per day<input type="number" name="hours" min="0" max="24" step="any" required value="{{ inputs.hours }}"></label>
+<label>Hours eliminated per day<input type="number" name="reduced_hours" min="0" max="24" step="any" required value="{{ inputs.reduced_hours }}"></label>
+<label>Projection period (days)<input type="number" name="days" min="1" max="365" step="1" required value="{{ inputs.days }}"></label>
+<label>Electricity tariff (₹/kWh)<input type="number" name="tariff" min="0" max="1000" step="any" required value="{{ tariff }}"></label>
+<button class="btn primary">Calculate potential savings →</button></form></article>
+<article class="panel"><h3>Calculation basis</h3><p>Energy saved = power × hours eliminated per day × days / 1000.</p><p>Carbon avoided = saved energy × configured emission factor.</p><p>Cost avoided = saved energy × tariff.</p><div class="factor">{{ factor }} <small>kg CO₂e/kWh</small></div><p class="small muted">Uses your account's configured factor, which may still be a provisional estimate. Assumes eliminated usage draws no power and remaining usage draws the same average power. Standby draw, taxes and fixed charges are excluded. Scenarios are not saved as actual activity.</p></article></div>
+{% if error %}<div class="notice error">Invalid scenario: {{ error }}</div>{% endif %}
+{% if result %}<div class="metric-grid"><article class="metric"><span>ENERGY SAVED</span><strong>{{ '%.3f'|format(result.energy) }} <small>kWh</small></strong></article><article class="metric"><span>CARBON AVOIDED</span><strong>{{ '%.3f'|format(result.carbon) }} <small>kg CO₂e</small></strong></article><article class="metric"><span>COST AVOIDED</span><strong>₹{{ '%.2f'|format(result.cost) }}</strong></article><article class="metric"><span>USAGE REDUCTION</span><strong>{{ '%.1f'|format(result.percent) }}%</strong></article></div>
+<div class="panel"><h3>Energy comparison</h3><p>Before: {{ '%.3f'|format(result.baseline) }} kWh</p><div class="ct-energy-bar"><span style="width:{{ 100 if result.baseline else 0 }}%"></span></div><p>After: {{ '%.3f'|format(result.proposed) }} kWh</p><div class="ct-energy-bar"><span style="width:{{ 100*result.proposed/result.baseline if result.baseline else 0 }}%"></span></div><p class="small muted">Potential savings only; actual outcomes depend on device use and electricity supply.</p></div>{% endif %}
+{% endblock %}

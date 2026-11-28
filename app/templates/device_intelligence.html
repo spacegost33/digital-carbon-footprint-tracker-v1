@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block heading %}Device intelligence{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/energy_tools.css') }}">
+<div class="welcome-row"><div><span class="eyebrow">DEVICE TELEMETRY / ENERGY COST</span><h2>Understand every recorded watt.</h2><p class="muted">Compare device consumption and review recent monitoring samples.</p></div><a class="btn primary" href="{{ url_for('web.devices') }}">Manage devices →</a></div>
+<div class="panel">
+<form method="get" action="{{ url_for('energy_tools.devices') }}" class="ct-energy-filter">
+<label>Computer<select name="device"><option value="">Default device</option>{% for d in devices %}<option value="{{ d.id }}" {% if selected and selected.id==d.id %}selected{% endif %}>{{ d.name }} · {{ d.platform }}</option>{% endfor %}</select></label>
+<label>Recorded period<select name="period">{% for key,days in periods.items() %}<option value="{{ key }}" {% if period==key %}selected{% endif %}>Last {{ key }}</option>{% endfor %}</select></label>
+<label>Electricity tariff (₹/kWh)<input type="number" name="tariff" min="0" max="1000" step="any" value="{{ tariff }}" required></label>
+<button class="btn primary" type="submit">Apply filters</button>
+</form>
+<p class="small muted">Tariff is an adjustable assumption, not your utility bill. Dates and receipt times use UTC. The page refreshes its readings every 60 seconds while open.</p>
+</div>
+<div id="ct-device-live" data-snapshot-url="{{ url_for('energy_tools.snapshot',device=selected.id if selected else '',period=period,tariff=tariff) }}">
+{% include '_device_snapshot.html' %}
+</div>
+<p id="ct-refresh-status" class="small muted" role="status"></p>
+<script src="{{ url_for('static', filename='js/device_intelligence.js') }}" defer></script>
+{% endblock %}

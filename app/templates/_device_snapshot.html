@@ -1,0 +1,34 @@
+<div class="metric-grid">
+<article class="metric"><span>RECORDED ENERGY · {{ period }}</span><strong>{{ '%.5f'|format(total_energy) }} <small>kWh</small></strong><p>{{ total_count }} records</p></article>
+<article class="metric"><span>RECORDED CARBON</span><strong>{{ '%.5f'|format(total_carbon) }} <small>kg CO₂e</small></strong><p>Existing stored emissions</p></article>
+<article class="metric"><span>ESTIMATED ELECTRICITY COST</span><strong>₹{{ '%.2f'|format(total_cost) }}</strong><p>{{ tariff }} ₹/kWh · recorded energy only</p></article>
+</div>
+<div class="panel"><div class="panel-head"><div><span class="eyebrow">SELECTED COMPUTER</span><h3>{{ selected.name if selected else 'No computer enrolled' }}</h3></div>{% if selected_stats %}<span class="pill">{{ selected_stats.status }}</span>{% endif %}</div>
+{% if selected %}
+<p class="small muted">Latest received sample: {{ latest.time if latest else 'No telemetry received' }}. Recently reporting means a report arrived within 10 minutes; it does not guarantee the device is online right now.</p>
+<div class="metric-grid">
+<article class="metric"><span>LATEST CPU</span><strong>{{ ('%.1f'|format(latest.cpu) ~ '%') if latest and latest.cpu is not none else 'N/A' }}</strong></article>
+<article class="metric"><span>LATEST RAM USED</span><strong>{{ ('%.2f'|format(latest.ram) ~ ' GiB') if latest and latest.ram is not none else 'N/A' }}</strong></article>
+<article class="metric"><span>LATEST AVG. POWER</span><strong>{{ ('%.2f'|format(latest.power) ~ ' W') if latest and latest.power is not none else 'N/A' }}</strong><p>Estimated from sample energy and duration</p></article>
+<article class="metric"><span>PERIOD ENERGY</span><strong>{{ '%.5f'|format(selected_stats.energy) }} <small>kWh</small></strong><p>{{ selected_stats.count }} received samples</p></article>
+<article class="metric"><span>PERIOD CARBON</span><strong>{{ '%.5f'|format(selected_stats.carbon) }} <small>kg CO₂e</small></strong></article>
+<article class="metric"><span>PERIOD COST</span><strong>₹{{ '%.2f'|format(selected_stats.cost) }}</strong><p>{{ '%.2f'|format(selected_stats.runtime) }} monitored hours</p></article>
+</div>
+{% if latest and latest.power is not none and 0.001 <= latest.power <= 10000 %}<a class="btn primary" href="{{ url_for('energy_tools.optimizer',watts='%.3f'|format(latest.power),tariff=tariff) }}">Model savings for this computer →</a>{% endif %}
+{% if latest and latest.cpu is not none and latest.cpu >= 80 %}<p class="notice info">Latest sample averaged at least 80% CPU. Review unnecessary workloads if this is unexpected; high CPU alone is not evidence of waste.</p>{% endif %}
+{% else %}<p class="muted">Enroll a computer and run its existing agent to unlock telemetry analytics. Manual estimates remain available below.</p>{% endif %}
+</div>
+{% if selected %}
+<div class="ct-energy-charts">
+{% for title,unit,chart in charts %}<article class="panel"><h3>{{ title }}</h3><p class="small muted">Up to 48 latest samples within {{ period }} · {{ unit }}</p>
+{% if chart.points %}<svg viewBox="0 0 350 130" class="ct-energy-chart" role="img" aria-label="{{ title }} samples plotted by receipt time"><path d="M28 20 V105 H332" fill="none" stroke="#496451"/><path d="M28 20 H332 M28 62.5 H332" stroke="#304638" stroke-dasharray="3 4"/><text x="24" y="23" text-anchor="end">{{ '%.1f'|format(chart.ceiling) }}</text><text x="24" y="108" text-anchor="end">0</text>{% for point in chart.points %}<circle cx="{{ point.x }}" cy="{{ point.y }}" r="3" fill="#8de85f"><title>{{ point.label }} · {{ '%.3f'|format(point.value) }} {{ unit }}</title></circle>{% endfor %}</svg><div class="ct-chart-label small muted"><span>{{ chart.start }}</span><span>{{ chart.end }} UTC</span></div>{% else %}<p class="empty">No valid readings for this metric in the selected period.</p>{% endif %}</article>{% endfor %}
+</div>
+{% endif %}
+<div class="panel"><h3>Device consumption comparison</h3><p class="muted small">Automatic devices are grouped by registered ID. Manual estimates are grouped by the recorded device name; matching names combine records. These are recorded totals, not complete electricity bills.</p>
+<div class="table-wrap"><table><thead><tr><th>DEVICE</th><th>METHOD / STATUS</th><th>RECORDS</th><th>ENERGY (kWh)</th><th>CARBON (kg)</th><th>COST (₹)</th></tr></thead><tbody>
+{% for d in comparisons %}<tr><td><a href="{{ url_for('energy_tools.devices',device=d.id,period=period,tariff=tariff) }}">{{ d.name }}</a></td><td>{{ d.status }} · agent</td><td>{{ d.count }}</td><td>{{ '%.5f'|format(d.energy) if d.count else 'No records' }}</td><td>{{ '%.5f'|format(d.carbon) if d.count else '—' }}</td><td>{{ '%.2f'|format(d.cost) if d.count else '—' }}</td></tr>{% endfor %}
+{% for d in manual %}<tr><td>{{ d.name }}</td><td>Manual estimate</td><td>{{ d.count }}</td><td>{{ '%.5f'|format(d.energy) }}</td><td>{{ '%.5f'|format(d.carbon) }}</td><td>{{ '%.2f'|format(d.cost) }}</td></tr>{% endfor %}
+{% if not comparisons and not manual %}<tr><td colspan="6">No device records yet.</td></tr>{% endif %}</tbody></table></div>
+<p class="small muted">Registered devices: {{ '%.5f'|format(auto_energy) }} kWh · Manual devices: {{ '%.5f'|format(manual_energy) }} kWh · Other recorded activity: {{ '%.5f'|format(other_energy) }} kWh. Older zero-energy telemetry may lack energy estimates; absence of data does not establish zero actual consumption.</p></div>
+{% if samples %}<div class="panel"><h3>Recent computer samples</h3><div class="table-wrap"><table><thead><tr><th>RECEIVED (UTC)</th><th>CPU %</th><th>RAM GiB</th><th>EST. POWER W</th><th>ENERGY kWh</th></tr></thead><tbody>{% for s in samples %}<tr><td>{{ s.time.strftime('%d %b %H:%M:%S') }}</td><td>{{ '%.1f'|format(s.cpu) if s.cpu is not none else 'N/A' }}</td><td>{{ '%.2f'|format(s.ram) if s.ram is not none else 'N/A' }}</td><td>{{ '%.2f'|format(s.power) if s.power is not none else 'N/A' }}</td><td>{{ '%.6f'|format(s.energy) if s.power is not none else 'N/A' }}</td></tr>{% endfor %}</tbody></table></div></div>{% endif %}
+<p class="small muted">Dashboard refreshed: {{ refreshed }} · Data reflects received telemetry, not a continuous sensor feed.</p>

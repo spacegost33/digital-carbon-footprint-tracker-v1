@@ -60,6 +60,8 @@ def create_app(test_config=None):
     app.register_blueprint(intelligence)
     from .benchmark import benchmark
     app.register_blueprint(benchmark)
+    from .device_intelligence import energy_tools
+    app.register_blueprint(energy_tools)
 
     @app.get("/health")
     def health():
