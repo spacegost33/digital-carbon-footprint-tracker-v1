@@ -14,6 +14,7 @@ from reportlab.pdfgen import canvas
 from . import db, limiter
 from .models import User, Activity, Device, Goal, Achievement, EmissionFactor
 from .services import record_activity, totals, active_factor
+from .security import safe_csv
 from .device_estimation import (
     DEVICE_PROFILES,
     estimate_device_energy
@@ -403,8 +404,19 @@ def report_csv():
     output = StringIO(); writer = csv.writer(output)
     writer.writerow(["recorded_at_utc", "category", "description", "energy_kwh", "carbon_kg_co2e", "measurement_type", "duration_seconds", "cpu_percent", "memory_mb"])
     for row in rows:
-        writer.writerow([row.created_at.isoformat(), row.category, row.description, row.energy_kwh, row.carbon_kg,
-                         row.measurement_type, row.duration_seconds, row.cpu_percent, row.memory_mb])
+        writer.writerow([
+            row.created_at.isoformat(),
+            safe_csv(row.category),
+            safe_csv(row.description),
+            row.energy_kwh,
+            row.carbon_kg,
+            safe_csv(row.measurement_type),
+            row.duration_seconds,
+            row.cpu_percent,
+            row.memory_mb
+        ])
+
+        
     return Response(output.getvalue(), mimetype="text/csv",
                     headers={"Content-Disposition": "attachment; filename=carbontrack-activities.csv"})
 

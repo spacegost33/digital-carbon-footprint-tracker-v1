@@ -4,13 +4,16 @@
 </a>
 {%- endmacro %}
 {% set ep = request.endpoint or '' %}
-{% set device_active = ep in ['web.devices', 'web.estimate_device', 'web.download_agent', 'web.revoke_device', 'energy_tools.devices', 'energy_tools.snapshot'] %}
-{% set carbon_active = ep in ['web.activities', 'web.analytics'] or ep.startswith('intelligence.') %}
+{% set device_active = ep in ['web.devices', 'web.estimate_device', 'web.download_agent', 'web.revoke_device', 'energy_tools.devices', 'energy_tools.snapshot', 'support.agent_setup'] %}
+{% set carbon_active = ep in ['web.activities', 'web.analytics'] or ep.startswith('intelligence.') or ep in ['support.chat', 'support.methodology'] %}
 {% set optimization_active = ep.startswith('benchmark.') or ep == 'energy_tools.optimizer' %}
 {% set goals_active = ep in ['web.goals', 'web.achievements'] %}
 {% set reports_active = ep.startswith('web.report') or ep in ['web.admin', 'web.institution', 'web.add_factor'] %}
 <div class="ct-nav-scroll">
     <div class="side-label">WORKSPACE</div>
+    {% if current_user.region and not (current_user.region == 'IN' or current_user.region.startswith('IN-')) %}
+    <p class="small muted">Outside India? <a href="{{ url_for('support.methodology') }}">Verify your regional factor</a> before interpreting estimates.</p>
+    {% endif %}
     <nav class="ct-nav" aria-label="Workspace navigation">
         {{ nav_link('web.dashboard', '◫', 'Overview', ep == 'web.dashboard') }}
         <details class="ct-nav-group" name="ct-workspace"{% if device_active %} open{% endif %}>
@@ -18,6 +21,7 @@
             <div class="ct-nav-children">
                 {{ nav_link('web.devices', '⌘', 'Devices & agents', ep == 'web.devices') }}
                 {{ nav_link('energy_tools.devices', '◉', 'Device intelligence', ep == 'energy_tools.devices') }}
+                {{ nav_link('support.agent_setup', '↓', 'Agent setup & sensors', ep == 'support.agent_setup') }}
             </div>
         </details>
         <details class="ct-nav-group" name="ct-workspace"{% if carbon_active %} open{% endif %}>
@@ -26,6 +30,8 @@
                 {{ nav_link('web.activities', '↗', 'Activities', ep == 'web.activities') }}
                 {{ nav_link('web.analytics', '▥', 'Analytics', ep == 'web.analytics') }}
                 {{ nav_link('intelligence.overview', '✧', 'Carbon intelligence', ep.startswith('intelligence.')) }}
+                {{ nav_link('support.methodology', '≋', 'Emission methodology', ep == 'support.methodology') }}
+                {{ nav_link('support.chat', '✦', 'AI carbon assistant', ep == 'support.chat') }}
             </div>
         </details>
         <details class="ct-nav-group" name="ct-workspace"{% if optimization_active %} open{% endif %}>

@@ -1,0 +1,54 @@
+name: Build CarbonTrack Windows Agent
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: carbontrack-agent-release
+  cancel-in-progress: false
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify repository integration (SQLite test database)
+        shell: pwsh
+        run: |
+          python -m pip install -r requirements.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s tests -p test_reliability_unit.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s tests -p test_reliability_integration.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build executable
+        shell: pwsh
+        run: |
+          python -m pip install -r monitoring_agent/requirements.txt 'pyinstaller>=6,<7'
+          python -m PyInstaller --clean --noconfirm --onefile --console --name CarbonTrack-Agent monitoring_agent/agent.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & .\dist\CarbonTrack-Agent.exe --self-test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          (Get-FileHash .\dist\CarbonTrack-Agent.exe -Algorithm SHA256).Hash.ToLower() + '  CarbonTrack-Agent.exe' | Set-Content -Encoding ascii dist/SHA256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CarbonTrack-Windows-Agent
+          path: |
+            dist/CarbonTrack-Agent.exe
+            dist/SHA256.txt
+      - name: Publish downloadable release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = 'carbontrack-agent-v3'
+          gh release view $tag --repo $env:GITHUB_REPOSITORY 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title 'CarbonTrack Windows Agent v3' --notes 'Unsigned Windows console agent. Review source and verify SHA256. Monitoring is opt-in.' dist/CarbonTrack-Agent.exe dist/SHA256.txt
+          } else {
+            Write-Host 'Release already exists; preserving its original source-to-binary association. New build is available as a workflow artifact.'
+            exit 0
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
