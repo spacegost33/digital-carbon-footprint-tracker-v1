@@ -63,6 +63,34 @@ def logout():
 @login_required
 def dashboard():
     stats = totals(current_user.id, 30)
+    device_records = Activity.query.filter(
+        Activity.user_id == current_user.id,
+        Activity.device_id.isnot(None),
+        Activity.created_at >= (
+            datetime.utcnow()
+            - timedelta(days=30)
+        )
+    )
+
+    device_energy = device_records.with_entities(
+        func.coalesce(
+            func.sum(Activity.energy_kwh), 0
+        )
+    ).scalar()
+
+    device_carbon = device_records.with_entities(
+        func.coalesce(
+            func.sum(Activity.carbon_kg), 0
+        )
+    ).scalar()
+
+    device_runtime = device_records.with_entities(
+        func.coalesce(
+            func.sum(Activity.duration_seconds), 0
+        )
+    ).scalar()
+
+    
     recent = Activity.query.filter_by(user_id=current_user.id).order_by(Activity.created_at.desc()).limit(8).all()
     devices = Device.query.filter_by(user_id=current_user.id, active=True).count()
     daily = []
@@ -71,8 +99,32 @@ def dashboard():
         value = db.session.query(func.coalesce(func.sum(Activity.carbon_kg), 0)).filter(
             Activity.user_id == current_user.id, func.date(Activity.created_at) == day).scalar() or 0
         daily.append({"day": day.strftime("%a"), "value": round(float(value), 3)})
-    return render_template("dashboard.html", stats=stats, recent=recent, devices=devices,
-                           daily=daily, factor=active_factor(current_user.region))
+
+
+    return render_template(
+        "dashboard.html",
+
+        stats=stats,
+        recent=recent,
+        devices=devices,
+        daily=daily,
+
+        factor=active_factor(
+            current_user.region
+        ),
+
+        device_energy=round(
+            float(device_energy), 4
+        ),
+
+        device_carbon=round(
+            float(device_carbon), 4
+        ),
+
+        device_runtime=round(
+            float(device_runtime) / 3600, 2
+        )
+    )
 
 @web.route("/activities", methods=["GET", "POST"])
 @login_required

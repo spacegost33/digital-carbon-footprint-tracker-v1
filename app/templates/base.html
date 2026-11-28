@@ -5,6 +5,9 @@
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="theme-color" content="#080d0a">
+        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+        <meta name="application-name" content="CarbonTrack">
+        <meta name="mobile-web-app-capable" content="yes">
         <title>{% block title %}{{ app_name }}{% endblock %}</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -87,6 +90,7 @@
                 </div>
                 <div class="top-actions">
                     <span class="system-status"><span class="live-dot"></span> System ready</span>
+                    <button type="button" id="installAppButton" class="btn primary" style="display:none;">↓ Install App</button>
                     <form method="post" action="{{ url_for('web.logout') }}">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button class="btn ghost logout-top">Log out <span>↗</span></button>
@@ -102,5 +106,6 @@
             </section>
         </main>
         <script src="{{ url_for('static',filename='js/app.js') }}" defer></script>
+        <script src="{{ url_for('static',filename='js/pwa.js') }}" defer></script>
     </body>
 </html>

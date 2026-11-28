@@ -38,6 +38,55 @@
         <p>Active monitoring agents</p>
     </article>
 </div>
+
+
+<div class="panel">
+    <div class="panel-head">
+        <div>
+            <span class="eyebrow">
+                AUTOMATIC MONITORING
+            </span>
+            <h3>Connected device impact</h3>
+        </div>
+        <span class="pill">30 DAYS</span>
+    </div>
+    <div class="metric-grid">
+        <article class="metric">
+            <span>DEVICE ENERGY</span>
+            <strong>
+                {{ device_energy }}
+                <small>kWh</small>
+            </strong>
+            <p>Recorded device energy</p>
+        </article>
+        <article class="metric">
+            <span>DEVICE EMISSIONS</span>
+            <strong>
+                {{ device_carbon }}
+                <small>kg CO₂e</small>
+            </strong>
+            <p>Connected device contribution</p>
+        </article>
+        <article class="metric">
+            <span>MONITORED RUNTIME</span>
+            <strong>
+                {{ device_runtime }}
+                <small>hrs</small>
+            </strong>
+            <p>Combined monitoring duration</p>
+        </article>
+    </div>
+    <p class="small muted">
+        Device energy values are estimates based
+        on configured power profiles.
+    </p>
+    <a href="{{ url_for('web.devices') }}">
+        Manage connected devices →
+    </a>
+</div>
+
+
+
 <div class="two-col">
     <article class="panel glass-3d">
         <div class="panel-head">

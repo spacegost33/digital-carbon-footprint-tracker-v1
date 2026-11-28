@@ -1,0 +1,90 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg"
+     width="192" height="192" viewBox="0 0 64 64">
+
+    <defs>
+        <linearGradient id="green"
+                        x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#e6ff80"/>
+            <stop offset="45%" stop-color="#75ff16"/>
+            <stop offset="100%" stop-color="#009624"/>
+        </linearGradient>
+
+        <linearGradient id="leaf"
+                        x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#eaff75"/>
+            <stop offset="55%" stop-color="#56eb00"/>
+            <stop offset="100%" stop-color="#007522"/>
+        </linearGradient>
+
+        <clipPath id="earth">
+            <circle cx="37" cy="39" r="18"/>
+        </clipPath>
+    </defs>
+
+    <!-- Five toes -->
+
+    <ellipse cx="9" cy="23" rx="3.5" ry="4.5"
+             fill="url(#green)"/>
+
+    <ellipse cx="17" cy="16" rx="4" ry="5.5"
+             fill="url(#green)"/>
+
+    <ellipse cx="27" cy="11" rx="4.5" ry="6"
+             fill="url(#green)"/>
+
+    <ellipse cx="38" cy="8" rx="5.5" ry="7"
+             fill="url(#green)"/>
+
+    <ellipse cx="51" cy="9" rx="7" ry="9"
+             transform="rotate(20 51 9)"
+             fill="url(#green)"/>
+
+    <!-- Footprint -->
+
+    <path d="M5 40 C4 17 42 12 57 29
+             C39 20 20 27 17 43
+             C13 53 24 60 35 62
+             C14 63 4 53 5 40Z"
+          fill="url(#green)"/>
+
+    <!-- Globe -->
+
+    <circle cx="37" cy="39" r="19"
+            fill="#f3fff5"
+            stroke="#087c29"
+            stroke-width="2"/>
+
+    <!-- Continents -->
+
+    <g clip-path="url(#earth)" fill="#159b19">
+
+        <path d="M19 28 L27 22 L36 25 L32 30
+                 L25 33 L29 39 L25 42
+                 L31 45 L32 51 L26 57
+                 L21 47 L16 36 Z"/>
+
+        <path d="M40 20 L47 25 L54 24
+                 L58 34 L49 36 L45 40
+                 L49 44 L43 53 L39 58
+                 L34 46 L32 40 L39 34
+                 L36 28 Z"/>
+    </g>
+
+    <!-- Rear leaf -->
+
+    <path d="M33 62 C43 48 56 43 59 35
+             C60 53 48 61 33 62Z"
+          fill="url(#green)"/>
+
+    <!-- Front leaf -->
+
+    <path d="M6 31 C9 43 34 42 36 63
+             C18 53 4 54 6 31Z"
+          fill="url(#leaf)"/>
+
+    <path d="M9 37 Q19 48 34 59"
+          fill="none"
+          stroke="#087022"
+          stroke-width="1.2"/>
+
+</svg>
