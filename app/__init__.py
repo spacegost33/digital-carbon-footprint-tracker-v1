@@ -56,6 +56,8 @@ def create_app(test_config=None):
     from .api import api
     app.register_blueprint(web)
     app.register_blueprint(api)
+    from .intelligence import intelligence
+    app.register_blueprint(intelligence)
 
     @app.get("/health")
     def health():

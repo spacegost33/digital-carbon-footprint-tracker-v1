@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block heading %}Carbon intelligence{% endblock %}
+{% block content %}
+<div class="welcome-row"><div><span class="eyebrow">PERSONAL SUSTAINABILITY</span><h2>Understand and reduce your footprint.</h2><p class="muted">Based on your actual recorded activity. All dates are UTC.</p></div></div>
+<div class="metric-grid">
+ <article class="metric metric-feature"><span>GREEN SCORE</span><strong>{{ analysis.score if analysis.score is not none else 'N/A' }}{% if analysis.score is not none %}<small>/100</small>{% endif %}</strong><p>Personal comparison, not a certified rating</p></article>
+ <article class="metric"><span>WEEKLY CHANGE</span><strong>{{ '%+.1f%%'|format(analysis.change) if analysis.change is not none else 'N/A' }}</strong><p>Against previous complete week</p></article>
+ <article class="metric"><span>NEXT 7 DAYS</span><strong>{{ '%.4f'|format(analysis.forecast) if analysis.forecast is not none else 'N/A' }}<small> kg CO₂e</small></strong><p>Recorded-usage projection</p></article>
+ <article class="metric"><span>TRACKING STREAK</span><strong>{{ analysis.streak }}<small> days</small></strong><p>Consecutive dates with records</p></article>
+</div>
+<div class="two-col align-start">
+ <article class="panel glass-3d"><span class="eyebrow">DIGITAL ACTIVITY ESTIMATOR</span><h3>Record energy from a digital activity</h3>
+ <form method="post" action="{{ url_for('intelligence.log_activity') }}" class="stack">
+ <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+ <label>Activity<select name="category">{% for key,name in profiles.items() %}<option value="{{ key }}">{{ name }}</option>{% endfor %}</select></label>
+ <label>Description<input name="description" maxlength="120" placeholder="e.g. Remote build server"></label>
+ <label>Average allocated power (W)<input type="number" name="watts" min="0.001" max="10000" step="any" required></label>
+ <label>Duration (hours)<input type="number" name="hours" min="0.001" max="24" step="any" required></label>
+ <label><input type="checkbox" name="no_overlap" value="yes" required> Energy is not already included in another record or monitoring agent.</label>
+ <button class="btn primary">Calculate &amp; save</button></form><p class="small muted">Energy = watts × hours / 1000. Remote/cloud estimates require an allocated power assumption. No fabricated network intensity.</p></article>
+ <article class="panel"><span class="eyebrow">PERSONAL BENCHMARK</span><h3>Compare recorded emissions</h3>
+ <p>Latest seven completed days: <b>{{ '%.5f'|format(analysis.current_total) }} kg CO₂e</b> ({{ analysis.covered }}/7 dates recorded).</p>
+ <p>Previous seven days: <b>{{ '%.5f'|format(analysis.baseline_total) }} kg CO₂e</b> ({{ analysis.baseline_covered }}/7 dates recorded).</p>
+ <p class="muted">Score = clamp(50 − percentage change / 2, 0, 100). No score until both periods have records every day and the baseline is positive. Missing days are not treated as zero. Even complete date coverage does not guarantee equal monitoring duration.</p>
+ <p class="small muted">Forecast uses the mean of seven completed recorded days × seven. It is a simple baseline, not a validated ML forecast.</p><p>Current factor: {{ factor }} kg CO₂e/kWh. Verify the source in Administration.</p></article>
+</div>
+<div class="panel"><span class="eyebrow">RULE-BASED CARBON COACH</span><h3>Personalized recommendations</h3>{% for tip in tips %}<p>{{ tip }}</p>{% endfor %}<p class="small muted">Deterministic expert rules based on your records; no external AI service or generative model is used.</p></div>
+<div class="two-col align-start">
+ <article class="panel"><span class="eyebrow">CHALLENGES</span><h3>Daily and weekly tracking</h3>{% for label,value,target in challenges %}<p>{{ label }} — <b>{{ value }}/{{ target }}</b> {{ 'Complete' if value == target else 'In progress' }}</p>{% endfor %}<form method="post" action="{{ url_for('intelligence.budget') }}" class="stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Carbon budget period<select name="period"><option value="1">Daily</option><option value="7">Weekly</option></select></label><label>Budget (kg CO₂e)<input type="number" name="target" min="0.000001" max="100000" step="any" required></label><button class="btn primary">Set budget</button></form>{% for g in budgets %}<p><b>{{ g.title }}</b> · Ends {{ g.end }} · {{ '%.5f'|format(g.used) }} / {{ g.target }} kg consumed · {{ 'Over budget' if g.used > g.target else 'Within recorded budget' }}</p>{% endfor %}<p class="small muted">A budget is consumption, not proof of a reduction.</p></article>
+ <article class="panel"><span class="eyebrow">GAMIFICATION</span><h3>Current milestones</h3>{% for title,earned in badges %}<p>{{ '✓' if earned else '○' }} {{ title }} — <b>{{ 'Unlocked' if earned else 'Locked' }}</b></p>{% endfor %}<p class="small muted">These milestones are recalculated from activity history; streak-based milestones can reset. Existing permanent achievements remain available separately.</p></article>
+</div>
+<div class="panel"><h3>Recorded carbon by category (last 30 completed days plus today)</h3>{% for key,carbon in categories|dictsort %}<p>{{ key|replace('_',' ')|title }}: <b>{{ '%.5f'|format(carbon) }} kg CO₂e</b></p>{% else %}<p class="muted">No records yet.</p>{% endfor %}</div>
+{% endblock %}

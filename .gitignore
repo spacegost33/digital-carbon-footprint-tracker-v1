@@ -4,4 +4,10 @@ __pycache__/
 *.py[cod]
 instance/
 *.sqlite3
+*.db
 .pytest_cache/
+*.log
+.vscode/
+build/
+dist/
+*.zip
