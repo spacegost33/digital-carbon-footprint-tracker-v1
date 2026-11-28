@@ -1,6 +1,9 @@
 from datetime import datetime, date, timedelta
 from io import BytesIO, StringIO
 import csv, re
+from pathlib import Path
+from zipfile import ZipFile, ZIP_DEFLATED
+from flask import send_file
 from statistics import mean
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
@@ -11,6 +14,10 @@ from reportlab.pdfgen import canvas
 from . import db, limiter
 from .models import User, Activity, Device, Goal, Achievement, EmissionFactor
 from .services import record_activity, totals, active_factor
+from .device_estimation import (
+    DEVICE_PROFILES,
+    estimate_device_energy
+)
 
 web = Blueprint("web", __name__)
 CATEGORIES = {"computing", "browsing", "streaming", "downloads", "cloud", "other"}
@@ -144,11 +151,152 @@ def activities():
     rows = Activity.query.filter_by(user_id=current_user.id).order_by(Activity.created_at.desc()).limit(100).all()
     return render_template("activities.html", rows=rows)
 
+
+
+@web.get("/devices/download-agent")
+@login_required
+def download_agent():
+
+    agent_folder = (
+        Path(__file__).resolve().parents[1]
+        / "monitoring_agent"
+    )
+
+    buffer = BytesIO()
+
+    filenames = (
+        "agent.py",
+        "requirements.txt",
+        ".env.example"
+    )
+
+    if not all(
+        (agent_folder / name).is_file()
+        for name in filenames
+    ):
+        abort(404)
+
+    with ZipFile(
+        buffer,
+        "w",
+        ZIP_DEFLATED
+    ) as archive:
+
+        for filename in filenames:
+
+            archive.write(
+                agent_folder / filename,
+                arcname=filename
+            )
+
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        mimetype="application/zip",
+        as_attachment=True,
+        download_name="CarbonTrack-Agent.zip",
+        max_age=0
+    )
+
+
+
 @web.get("/devices")
 @login_required
 def devices():
-    rows = Device.query.filter_by(user_id=current_user.id).order_by(Device.created_at.desc()).all()
-    return render_template("devices.html", devices=rows)
+
+    rows = Device.query.filter_by(
+        user_id=current_user.id
+    ).order_by(
+        Device.created_at.desc()
+    ).all()
+
+    return render_template(
+        "devices.html",
+        devices=rows,
+        device_profiles=DEVICE_PROFILES,
+        emission_factor=active_factor(
+            current_user.region
+        )
+    )
+
+
+@web.post("/devices/estimate")
+@login_required
+def estimate_device():
+
+    try:
+        device_type = request.form.get(
+            "device_type", ""
+        )
+
+        device_name = request.form.get(
+            "device_name", ""
+        ).strip()
+
+        watts = float(
+            request.form.get("watts", "")
+        )
+
+        hours = float(
+            request.form.get("hours", "")
+        )
+
+        quantity = int(
+            request.form.get("quantity", "1")
+        )
+
+        if device_type not in DEVICE_PROFILES:
+            raise ValueError
+
+        if len(device_name) > 100:
+            raise ValueError
+
+        energy = estimate_device_energy(
+            watts,
+            hours,
+            quantity
+        )
+
+        name = (
+            device_name
+            or DEVICE_PROFILES[device_type]
+        )
+
+        description = (
+            f"{name} | "
+            f"{watts:g} W × "
+            f"{hours:g} hrs × "
+            f"{quantity} device(s)"
+        )
+
+        row = record_activity(
+            current_user.id,
+            "device_estimate",
+            energy,
+            description,
+            "estimated",
+            duration_seconds=hours * 3600
+        )
+
+        flash(
+            f"Device recorded: "
+            f"{energy:.5f} kWh, "
+            f"{row.carbon_kg:.5f} kg CO2e.",
+            "success"
+        )
+
+    except (ValueError, TypeError):
+
+        flash(
+            "Enter valid device specifications, "
+            "power, duration and quantity.",
+            "error"
+        )
+
+    return redirect(
+        url_for("web.devices")
+    )
 
 @web.post("/devices/<int:device_id>/revoke")
 @login_required

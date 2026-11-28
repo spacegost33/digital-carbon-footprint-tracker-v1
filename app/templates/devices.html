@@ -55,6 +55,14 @@
 <div class="panel">
     <span class="eyebrow">AGENT SETUP</span>
     <h3>How device monitoring works</h3>
+    <a
+    class="btn primary"
+    href="{{ url_for('web.download_agent') }}">
+    ↓ Download CarbonTrack Agent
+    </a>
+
+    <p class="small muted">Python monitoring agent for Windows, Linux and macOS. Requires Python and the included dependencies.</p>
+    
     <ol class="steps">
         <li>Enroll a device and copy its one-time token.</li>
         <li>Install the agent and configure the API URL and token.</li>
@@ -65,6 +73,149 @@
     <p class="small muted">Never share device tokens. Revoke a device immediately if its token is exposed.</p>
 </div>
 {% set enroll_url = url_for('api.enroll', _external=True) %}
+<div class="two-col">
+
+    <article class="panel glass-3d">
+
+        <span class="eyebrow">
+            UNIVERSAL DEVICE ESTIMATION
+        </span>
+
+        <h3>Estimate device footprint</h3>
+
+        <p class="muted">
+            Calculate emissions from electronic
+            devices without installing an agent.
+        </p>
+
+        <form
+            method="post"
+            action="{{ url_for('web.estimate_device') }}"
+            class="stack">
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+            <label>
+                Device category
+
+                <select name="device_type" required>
+
+                    {% for key, name in device_profiles.items() %}
+
+                    <option value="{{ key }}">
+                        {{ name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+            </label>
+
+            <label>
+                Device name (optional)
+
+                <input
+                    name="device_name"
+                    maxlength="100"
+                    placeholder="e.g. My Wi-Fi router"
+                >
+            </label>
+
+            <label>
+                Average power consumption (Watts)
+
+                <input
+                    name="watts"
+                    type="number"
+                    min="0.001"
+                    max="10000"
+                    step="any"
+                    required
+                >
+            </label>
+
+            <label>
+                Daily usage duration (Hours)
+
+                <input
+                    name="hours"
+                    type="number"
+                    min="0.001"
+                    max="24"
+                    step="any"
+                    required
+                >
+            </label>
+
+            <label>
+                Number of devices
+
+                <input
+                    name="quantity"
+                    type="number"
+                    min="1"
+                    max="1000"
+                    value="1"
+                    required
+                >
+            </label>
+
+            <button class="btn primary">
+                Calculate & Save →
+            </button>
+
+        </form>
+
+    </article>
+
+    <article class="panel">
+
+        <span class="eyebrow">
+            CALCULATION METHOD
+        </span>
+
+        <h3>Device carbon estimation</h3>
+
+        <p>
+            Energy (kWh) =
+            Watts × Hours × Quantity / 1000
+        </p>
+
+        <p>
+            Carbon emissions =
+            Energy × Regional emission factor
+        </p>
+
+        <div class="factor">
+            {{ emission_factor }}
+            <small>kg CO₂e / kWh</small>
+        </div>
+
+        <p class="small muted">
+            All values are estimates.
+            Enter average operating power,
+            not maximum rated power.
+        </p>
+
+        <p class="small muted">
+            For battery-powered devices,
+            use average charging power
+            and charging duration.
+        </p>
+
+        <p class="small muted">
+            Do not manually record energy
+            already tracked by an active
+            monitoring agent.
+        </p>
+
+    </article>
+
+</div>
 <script>
     window.CARBONTRACK_ENROLL_URL = "{{ enroll_url|e }}";
 </script>
