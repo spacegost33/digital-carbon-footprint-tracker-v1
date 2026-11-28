@@ -1,1 +1,45 @@
-{% extends 'base.html' %}{% block heading %}Goals & challenges{% endblock %}{% block content %}<div class="two-col align-start"><article class="panel glass-3d"><span class="eyebrow">PERSONAL TARGET</span><h3>Create a carbon goal</h3><form method="post" class="stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Goal title<input name="title" maxlength="120" required placeholder="Reduce monthly digital footprint"></label><label>Target carbon (kg CO₂e)<input type="number" name="target_kg" min="0.01" max="100000" step="any" required></label><label>End date<input type="date" name="end_date" required></label><button class="btn primary">Create goal →</button></form></article><article class="panel"><span class="eyebrow">PROGRESS</span><h3>Make reduction measurable.</h3><p>Set a target, track your activity and review your trend. Progress is calculated from recorded carbon data within the goal period.</p></article></div><div class="panel"><h3>Your goals</h3>{% for g in goals %}<div class="goal-row"><div><b>{{ g.title }}</b><p class="muted small">Target {{ g.target_kg }} kg · Ends {{ g.end_date }}</p></div><strong>{{ g.progress }}%</strong><div class="progress"><span style="width:{{ g.progress }}%"></span></div></div>{% else %}<div class="empty">No goals yet. Create your first challenge.</div>{% endfor %}</div>{% endblock %}
+{% extends 'base.html' %}
+{% block heading %}Goals & challenges{% endblock %}
+{% block content %}
+<div class="two-col align-start">
+    <article class="panel glass-3d">
+        <span class="eyebrow">PERSONAL TARGET</span>
+        <h3>Create a carbon goal</h3>
+        <form method="post" class="stack">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>Goal title
+                <input name="title" maxlength="120" required placeholder="Reduce monthly digital footprint">
+            </label>
+            <label>Target carbon (kg CO₂e)
+                <input type="number" name="target_kg" min="0.01" max="100000" step="any" required>
+            </label>
+            <label>End date
+                <input type="date" name="end_date" required>
+            </label>
+            <button class="btn primary">Create goal →</button>
+        </form>
+    </article>
+    <article class="panel">
+        <span class="eyebrow">PROGRESS</span>
+        <h3>Make reduction measurable.</h3>
+        <p>Set a target, track your activity and review your trend. Progress is calculated from recorded carbon data within the goal period.</p>
+    </article>
+</div>
+<div class="panel">
+    <h3>Your goals</h3>
+    {% for g in goals %}
+    <div class="goal-row">
+        <div>
+            <b>{{ g.title }}</b>
+            <p class="muted small">Target {{ g.target_kg }} kg · Ends {{ g.end_date }}</p>
+        </div>
+        <strong>{{ g.progress }}%</strong>
+        <div class="progress">
+            <span data-progress="{{ g.progress }}"></span>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty">No goals yet. Create your first challenge.</div>
+    {% endfor %}
+</div>
+{% endblock %}

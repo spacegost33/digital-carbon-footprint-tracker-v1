@@ -1,1 +1,19 @@
-{% extends 'base.html' %}{% block heading %}Achievements{% endblock %}{% block content %}<div class="panel"><span class="eyebrow">MILESTONES</span><h3>Your achievements</h3>{% for a in items %}<div class="achievement"><div class="achievement-icon">✧</div><div><b>{{ a.title }}</b><p class="muted small">Unlocked {{ a.awarded_at.strftime('%d %b %Y') }}</p></div></div>{% else %}<div class="empty">Your milestones will appear as you record activity and reach platform achievements.</div>{% endfor %}</div>{% endblock %}
+{% extends 'base.html' %}
+{% block heading %}Achievements{% endblock %}
+{% block content %}
+<div class="panel">
+    <span class="eyebrow">MILESTONES</span>
+    <h3>Your achievements</h3>
+    {% for a in items %}
+    <div class="achievement">
+        <div class="achievement-icon">✧</div>
+        <div>
+            <b>{{ a.title }}</b>
+            <p class="muted small">Unlocked {{ a.awarded_at.strftime('%d %b %Y') }}</p>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty">Your milestones will appear as you record activity and reach platform achievements.</div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,1 +1,28 @@
-{% extends 'base.html' %}{% block heading %}Institution overview{% endblock %}{% block content %}<div class="welcome-row"><div><h2>Collective sustainability view.</h2><p class="muted">Aggregated platform indicators. Individual user activity is not exposed here.</p></div></div><div class="metric-grid"><div class="metric"><span>REGISTERED USERS</span><strong>{{ users }}</strong></div><div class="metric"><span>AGGREGATE CARBON</span><strong>{{ carbon }} <small>kg CO₂e</small></strong></div><div class="metric"><span>ACTIVITY RECORDS</span><strong>{{ activities }}</strong></div><div class="metric"><span>ACTIVE DEVICES</span><strong>{{ devices }}</strong></div></div>{% endblock %}
+{% extends 'base.html' %}
+{% block heading %}Institution overview{% endblock %}
+{% block content %}
+<div class="welcome-row">
+    <div>
+        <h2>Collective sustainability view.</h2>
+        <p class="muted">Aggregated platform indicators. Individual user activity is not exposed here.</p>
+    </div>
+</div>
+<div class="metric-grid">
+    <div class="metric">
+        <span>REGISTERED USERS</span>
+        <strong>{{ users }}</strong>
+    </div>
+    <div class="metric">
+        <span>AGGREGATE CARBON</span>
+        <strong>{{ carbon }} <small>kg CO₂e</small></strong>
+    </div>
+    <div class="metric">
+        <span>ACTIVITY RECORDS</span>
+        <strong>{{ activities }}</strong>
+    </div>
+    <div class="metric">
+        <span>ACTIVE DEVICES</span>
+        <strong>{{ devices }}</strong>
+    </div>
+</div>
+{% endblock %}

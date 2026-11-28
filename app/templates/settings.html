@@ -1,1 +1,18 @@
-{% extends 'base.html' %}{% block heading %}Settings{% endblock %}{% block content %}<div class="panel form-panel glass-3d"><span class="eyebrow">PROFILE & PREFERENCES</span><h3>Account settings</h3><form method="post" class="stack"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Display name<input name="name" maxlength="100" value="{{ current_user.name }}" required></label><label>Grid region code<input name="region" maxlength="40" value="{{ current_user.region }}" required></label><p class="small muted">The region selects an active emission factor. Verify its source and version for your reporting purpose.</p><button class="btn primary">Save settings →</button></form></div>{% endblock %}
+{% extends 'base.html' %}
+{% block heading %}Settings{% endblock %}
+{% block content %}
+<div class="panel form-panel glass-3d">
+    <span class="eyebrow">PROFILE & PREFERENCES</span>
+    <h3>Account settings</h3>
+    <form method="post" class="stack">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Display name
+            <input name="name" maxlength="100" value="{{ current_user.name }}" required>
+        </label>
+        <label>Grid region code
+            <input name="region" maxlength="40" value="{{ current_user.region }}" required>
+        </label>
+        <p class="small muted">The region selects an active emission factor. Verify its source and version for your reporting purpose.</p>
+        <button class="btn primary">Save settings →</button>
+    </form>
+</div>{% endblock %}

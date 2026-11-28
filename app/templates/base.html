@@ -1,20 +1,106 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="csrf-token" content="{{ csrf_token() }}"><meta name="theme-color" content="#080d0a">
-<title>{% block title %}{{ app_name }}{% endblock %}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}">
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}?v=2"><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script></head>
-<body><div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
-{% if current_user.is_authenticated %}
-<aside class="sidebar"> <a class="brand" href="{{ url_for('web.dashboard') }}"> <img src="{{ url_for('static', filename='images/logo.png') }}" alt="CarbonTrack" class="brand-image"></a>
-<div class="side-label">WORKSPACE</div><nav class="nav-main">
-<a href="{{ url_for('web.dashboard') }}"><i>◫</i><span>Overview</span></a><a href="{{ url_for('web.activities') }}"><i>↗</i><span>Activities</span></a><a href="{{ url_for('web.devices') }}"><i>⌘</i><span>Devices & agents</span></a><a href="{{ url_for('web.analytics') }}"><i>▥</i><span>Analytics</span></a><a href="{{ url_for('web.goals') }}"><i>◎</i><span>Goals</span></a><a href="{{ url_for('web.achievements') }}"><i>✧</i><span>Achievements</span></a><a href="{{ url_for('web.reports') }}"><i>▤</i><span>Reports</span></a></nav>
-<div class="side-label">ACCOUNT</div><nav><a href="{{ url_for('web.settings') }}"><i>⚙</i><span>Settings</span></a>{% if current_user.role in ['admin','institution'] %}<a href="{{ url_for('web.institution') }}"><i>▦</i><span>Institution</span></a>{% endif %}{% if current_user.role=='admin' %}<a href="{{ url_for('web.admin') }}"><i>♙</i><span>Administration</span></a>{% endif %}</nav>
-<div class="sidebar-bottom"><div class="avatar">{{ current_user.name[:1]|upper }}</div><div class="user-mini"><b>{{ current_user.name }}</b><small>{{ current_user.role|title }}</small></div><form method="post" action="{{ url_for('web.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="logout-btn" title="Sign out" aria-label="Sign out">↗</button></form></div></aside>
-{% endif %}
-<main class="main {% if not current_user.is_authenticated %}public-main{% endif %}">
-{% if current_user.is_authenticated %}<header class="topbar"><div><span class="eyebrow">CARBON INTELLIGENCE / PERSONAL WORKSPACE</span><h1>{% block heading %}Overview{% endblock %}</h1></div><div class="top-actions"><span class="system-status"><span class="live-dot"></span> System ready</span><form method="post" action="{{ url_for('web.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn ghost logout-top">Log out <span>↗</span></button></form></div></header>{% endif %}
-<section class="content">{% for category,message in get_flashed_messages(with_categories=true) %}<div class="notice {{ category }}">{{ message }}</div>{% endfor %}{% block content %}{% endblock %}</section></main>
-<script src="{{ url_for('static',filename='js/app.js') }}" defer></script></body></html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-color" content="#080d0a">
+        <title>{% block title %}{{ app_name }}{% endblock %}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}">
+        <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}?v=3">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+    </head>
+    <body> 
+        <div class="ambient ambient-a"></div>
+        <div class="ambient ambient-b"></div>
+        {% if current_user.is_authenticated %}
+        <aside class="sidebar"> 
+            <a class="brand" href="{{ url_for('web.dashboard') }}">
+                <span class="ct-brand-logo" role="img" aria-label="CarbonTrack">
+                    <span class="ct-symbol" aria-hidden="true">
+                        <span class="ct-toes">
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                        </span>
+
+                        <span class="ct-footprint"></span>
+                        <span class="ct-earth"></span>
+                        <span class="ct-leaf-back"></span>
+                        <span class="ct-leaf-front"></span>
+                    </span>
+                    <span class="ct-brand-content">
+                        <span class="ct-brand-name">
+                            <span class="ct-carbon">Carbon</span><span class="ct-track">Track</span>
+                        </span>
+                        <span class="ct-tagline">
+                            Track <b>•</b> Reduce <b>•</b>
+                            <strong>Go Greener</strong>
+                        </span>
+                    </span>
+                </span>
+            </a>
+            <div class="side-label">
+                WORKSPACE
+            </div>
+            <nav class="nav-main">
+                <a href="{{ url_for('web.dashboard') }}"><i>◫</i><span>Overview</span></a>
+                <a href="{{ url_for('web.activities') }}"><i>↗</i><span>Activities</span></a>
+                <a href="{{ url_for('web.devices') }}"><i>⌘</i><span>Devices & agents</span></a>
+                <a href="{{ url_for('web.analytics') }}"><i>▥</i><span>Analytics</span></a>
+                <a href="{{ url_for('web.goals') }}"><i>◎</i><span>Goals</span></a>
+                <a href="{{ url_for('web.achievements') }}"><i>✧</i><span>Achievements</span></a>
+                <a href="{{ url_for('web.reports') }}"><i>▤</i><span>Reports</span></a>
+            </nav>
+            <div class="side-label">ACCOUNT</div>
+            <nav>
+                <a href="{{ url_for('web.settings') }}"><i>⚙</i><span>Settings</span></a>
+                {% if current_user.role in ['admin','institution'] %}
+                <a href="{{ url_for('web.institution') }}"><i>▦</i><span>Institution</span></a>
+                {% endif %}
+                {% if current_user.role=='admin' %}
+                <a href="{{ url_for('web.admin') }}"><i>♙</i><span>Administration</span></a>
+                {% endif %}
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="avatar">{{ current_user.name[:1]|upper }}</div>
+                <div class="user-mini"><b>{{ current_user.name }}</b><small>{{ current_user.role|title }}</small></div>
+                <form method="post" action="{{ url_for('web.logout') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="logout-btn" title="Sign out" aria-label="Sign out">↗</button>
+                </form>
+            </div>
+        </aside>
+                    
+        {% endif %}
+        <main class="main {% if not current_user.is_authenticated %}public-main{% endif %}">
+            {% if current_user.is_authenticated %}
+            <header class="topbar">
+                <div>
+                    <span class="eyebrow">CARBON INTELLIGENCE / PERSONAL WORKSPACE</span>
+                    <h1>{% block heading %}Overview{% endblock %}</h1>
+                </div>
+                <div class="top-actions">
+                    <span class="system-status"><span class="live-dot"></span> System ready</span>
+                    <form method="post" action="{{ url_for('web.logout') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn ghost logout-top">Log out <span>↗</span></button>
+                    </form>
+                </div>
+            </header>
+            {% endif %}
+            <section class="content">
+                {% for category,message in get_flashed_messages(with_categories=true) %}
+                <div class="notice {{ category }}">{{ message }}</div>
+                {% endfor %}
+                {% block content %}{% endblock %}
+            </section>
+        </main>
+        <script src="{{ url_for('static',filename='js/app.js') }}" defer></script>
+    </body>
+</html>

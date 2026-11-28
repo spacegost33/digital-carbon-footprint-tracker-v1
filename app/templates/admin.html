@@ -1,1 +1,37 @@
-{% extends 'base.html' %}{% block heading %}Administration{% endblock %}{% block content %}<div class="metric-grid"><div class="metric"><span>USERS</span><strong>{{ users }}</strong></div><div class="metric"><span>ACTIVITIES</span><strong>{{ activities }}</strong></div><div class="metric"><span>DEVICES</span><strong>{{ devices }}</strong></div></div><div class="panel"><h3>Emission factor registry</h3><form method="post" action="{{ url_for('web.add_factor') }}" class="inline-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input name="region" placeholder="Region code" required><input name="name" placeholder="Factor name" required><input name="kg_per_kwh" type="number" min="0.0001" max="5" step="any" placeholder="kg/kWh" required><input name="source" placeholder="Source / URL" required><input name="version" placeholder="Version" required><button class="btn primary">Add factor</button></form>{% for f in factors %}<div class="factor-row"><b>{{ f.region }} · {{ f.name }}</b><span>{{ f.kg_per_kwh }} kg/kWh</span><small>{{ f.source }} · {{ f.version }} · {{ 'Active' if f.active else 'Inactive' }}</small></div>{% endfor %}</div>{% endblock %}
+{% extends 'base.html' %}
+{% block heading %}Administration{% endblock %}
+{% block content %}
+<div class="metric-grid">
+    <div class="metric">
+        <span>USERS</span>
+        <strong>{{ users }}</strong>
+    </div>
+    <div class="metric">
+        <span>ACTIVITIES</span>
+        <strong>{{ activities }}</strong>
+    </div>
+    <div class="metric">
+        <span>DEVICES</span>
+        <strong>{{ devices }}</strong>
+    </div>
+</div>
+<div class="panel">
+    <h3>Emission factor registry</h3>
+    <form method="post" action="{{ url_for('web.add_factor') }}" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input name="region" placeholder="Region code" required>
+        <input name="name" placeholder="Factor name" required>
+        <input name="kg_per_kwh" type="number" min="0.0001" max="5" step="any" placeholder="kg/kWh" required>
+        <input name="source" placeholder="Source / URL" required>
+        <input name="version" placeholder="Version" required>
+        <button class="btn primary">Add factor</button>
+    </form>
+    {% for f in factors %}
+    <div class="factor-row">
+        <b>{{ f.region }} · {{ f.name }}</b>
+        <span>{{ f.kg_per_kwh }} kg/kWh</span>
+        <small>{{ f.source }} · {{ f.version }} · {{ 'Active' if f.active else 'Inactive' }}</small>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,1 +1,32 @@
-{% extends 'base.html' %}{% block content %}<div class="landing-shell"><div class="hero-orbit"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit-core"><span>CO₂</span><small>IMPACT<br>ENGINE</small></div><div class="orbit-chip chip-one">ENERGY / DATA</div><div class="orbit-chip chip-two">MEASURE → REDUCE</div></div><div class="landing-copy"><div class="hero-tag"><span class="live-dot"></span> DIGITAL SUSTAINABILITY INTELLIGENCE</div><h1>Make your<br><em>digital impact</em><br>visible.</h1><p>Understand the energy behind your digital life. Track carbon activity, connect your devices and turn better data into measurable progress.</p><div class="hero-actions"><a class="btn primary" href="{{ url_for('web.register') }}">Start tracking <span>↗</span></a><a class="btn secondary" href="{{ url_for('web.login') }}">Sign in</a></div><div class="hero-foot"><span>01 / MEASURE</span><span>02 / UNDERSTAND</span><span>03 / REDUCE</span></div></div></div>{% endblock %}
+{% extends 'base.html' %}
+{% block content %}
+<div class="landing-shell">
+    <div class="hero-orbit">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="orbit-core">
+            <span>CO₂</span>
+            <small>IMPACT<br>ENGINE</small>
+        </div>
+        <div class="orbit-chip chip-one">ENERGY / DATA</div>
+        <div class="orbit-chip chip-two">MEASURE → REDUCE</div>
+    </div>
+    <div class="landing-copy">
+        <div class="hero-tag">
+            <span class="live-dot"></span>
+             DIGITAL SUSTAINABILITY INTELLIGENCE
+        </div>
+        <h1>Make your<br><em>digital impact</em><br>visible.</h1>
+        <p>Understand the energy behind your digital life. Track carbon activity, connect your devices and turn better data into measurable progress.</p>
+        <div class="hero-actions">
+            <a class="btn primary" href="{{ url_for('web.register') }}">Start tracking <span>↗</span></a>
+            <a class="btn secondary" href="{{ url_for('web.login') }}">Sign in</a>
+        </div>
+        <div class="hero-foot">
+            <span>01 / MEASURE</span>
+            <span>02 / UNDERSTAND</span>
+            <span>03 / REDUCE</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

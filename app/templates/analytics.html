@@ -1,1 +1,35 @@
-{% extends 'base.html' %}{% block heading %}Analytics{% endblock %}{% block content %}<div class="metric-grid"><article class="metric"><span>7-DAY CARBON</span><strong>{{ daily.carbon }} <small>kg CO₂e</small></strong></article><article class="metric"><span>30-DAY CARBON</span><strong>{{ monthly.carbon }} <small>kg CO₂e</small></strong></article><article class="metric"><span>30-DAY ENERGY</span><strong>{{ monthly.energy }} <small>kWh</small></strong></article><article class="metric"><span>DATA POINTS</span><strong>{{ monthly.count }}</strong></article></div><div class="panel glass-3d"><span class="eyebrow">INTERPRETATION</span><h3>Seven-day trend projection</h3>{% if forecast is not none %}<div class="factor">{{ forecast }} <small>kg CO₂e projected</small></div><p>Linear trend projection from 14 calendar days of recorded activity ({{ observed }} active days). This is directional, not a validated machine-learning forecast.</p>{% else %}<p>Not enough history yet. Record activity across at least seven distinct days to unlock a basic trend projection.</p>{% endif %}<p class="muted">Do not treat this projection as a formal emissions forecast.</p></div>{% endblock %}
+{% extends 'base.html' %}
+{% block heading %}Analytics{% endblock %}
+{% block content %}
+<div class="metric-grid">
+    <article class="metric">
+        <span>7-DAY CARBON</span>
+        <strong>{{ daily.carbon }} 
+            <small>kg CO₂e</small>
+        </strong>
+    </article>
+    <article class="metric">
+        <span>30-DAY CARBON</span>
+        <strong>{{ monthly.carbon }} <small>kg CO₂e</small></strong>
+    </article>
+    <article class="metric">
+        <span>30-DAY ENERGY</span>
+        <strong>{{ monthly.energy }} <small>kWh</small></strong>
+    </article>
+    <article class="metric">
+        <span>DATA POINTS</span>
+        <strong>{{ monthly.count }}</strong>
+    </article>
+</div>
+<div class="panel glass-3d">
+    <span class="eyebrow">INTERPRETATION</span>
+    <h3>Seven-day trend projection</h3>
+    {% if forecast is not none %}
+    <div class="factor">{{ forecast }} <small>kg CO₂e projected</small></div>
+    <p>Linear trend projection from 14 calendar days of recorded activity ({{ observed }} active days). This is directional, not a validated machine-learning forecast.</p>
+    {% else %}
+    <p>Not enough history yet. Record activity across at least seven distinct days to unlock a basic trend projection.</p>
+    {% endif %}
+    <p class="muted">Do not treat this projection as a formal emissions forecast.</p>
+</div>
+{% endblock %}

@@ -1,5 +1,101 @@
-{% extends 'base.html' %}{% block heading %}Overview{% endblock %}{% block content %}
-<div class="welcome-row"><div><div class="eyebrow">YOUR DIGITAL FOOTPRINT</div><h2>Your impact, in focus.</h2><p class="muted">A clear view of your digital energy and carbon activity over the last 30 days.</p></div><a class="btn primary" href="{{ url_for('web.activities') }}">＋ Log activity</a></div>
-<div class="metric-grid"><article class="metric metric-feature"><span>CARBON FOOTPRINT <i>↗</i></span><strong>{{ stats.carbon }} <small>kg CO₂e</small></strong><p>Last 30 days</p><div class="metric-glow"></div></article><article class="metric"><span>ENERGY CONSUMED <i>⌁</i></span><strong>{{ stats.energy }} <small>kWh</small></strong><p>Estimated + measured</p></article><article class="metric"><span>ACTIVITIES TRACKED <i>▤</i></span><strong>{{ stats.count }}</strong><p>Recorded events</p></article><article class="metric"><span>CONNECTED DEVICES <i>⌘</i></span><strong>{{ devices }}</strong><p>Active monitoring agents</p></article></div>
-<div class="two-col"><article class="panel glass-3d"><div class="panel-head"><div><span class="eyebrow">EMISSIONS TREND</span><h3>Daily carbon output</h3></div><span class="pill">7 DAYS</span></div><div class="chart-wrap"><canvas id="trendChart" height="150"></canvas></div><script type="application/json" id="trendData">{{ daily|tojson }}</script></article><article class="panel insight glass-3d"><span class="eyebrow">CALCULATION BASIS</span><h3>Transparent by design.</h3><p>Carbon is calculated from energy multiplied by your active regional emission factor.</p><div class="factor">{{ factor }} <small>kg CO₂e / kWh</small></div><p class="small muted">Starter factor only. Confirm its source and reporting year before formal disclosure.</p><a href="{{ url_for('web.settings') }}">Review region settings →</a></article></div>
-<article class="panel"><div class="panel-head"><div><span class="eyebrow">LATEST RECORDS</span><h3>Recent activity</h3></div><a href="{{ url_for('web.activities') }}">View all →</a></div>{% if recent %}<div class="table-wrap"><table><thead><tr><th>ACTIVITY</th><th>ENERGY</th><th>CARBON</th><th>TYPE</th><th>DATE</th></tr></thead><tbody>{% for a in recent %}<tr><td>{{ a.description or a.category|title }}</td><td>{{ '%.4f'|format(a.energy_kwh) }} kWh</td><td>{{ '%.4f'|format(a.carbon_kg) }} kg</td><td><span class="pill">{{ a.measurement_type }}</span></td><td>{{ a.created_at.strftime('%d %b') }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty">No activity recorded yet. Add your first activity to begin tracking.</div>{% endif %}</article>{% endblock %}
+{% extends 'base.html' %}
+{% block heading %}Overview{% endblock %}
+{% block content %}
+
+<div class="welcome-row">
+    <div>
+        <div class="eyebrow">YOUR DIGITAL FOOTPRINT</div>
+        <h2>Your impact, in focus.</h2>
+        <p class="muted">A clear view of your digital energy and carbon activity over the last 30 days.</p>
+    </div>
+    <a class="btn primary" href="{{ url_for('web.activities') }}">＋ Log activity</a>
+</div>
+
+<div class="metric-grid">
+    <article class="metric metric-feature">
+        <span>CARBON FOOTPRINT <i>↗</i></span>
+        <strong>{{ stats.carbon }} 
+            <small>kg CO₂e</small>
+        </strong>
+        <p>Last 30 days</p>
+        <div class="metric-glow"></div>
+    </article>
+    <article class="metric">
+        <span>ENERGY CONSUMED <i>⌁</i></span>
+        <strong>{{ stats.energy }} 
+            <small>kWh</small>
+        </strong>
+        <p>Estimated + measured</p>
+    </article>
+    <article class="metric">
+        <span>ACTIVITIES TRACKED <i>▤</i></span>
+        <strong>{{ stats.count }}</strong>
+        <p>Recorded events</p>
+    </article>
+    <article class="metric">
+        <span>CONNECTED DEVICES <i>⌘</i></span>
+        <strong>{{ devices }}</strong>
+        <p>Active monitoring agents</p>
+    </article>
+</div>
+<div class="two-col">
+    <article class="panel glass-3d">
+        <div class="panel-head">
+            <div>
+                <span class="eyebrow">EMISSIONS TREND</span>
+                <h3>Daily carbon output</h3>
+            </div>
+            <span class="pill">7 DAYS</span>
+        </div>
+        <div class="chart-wrap">
+            <canvas id="trendChart" height="150"></canvas>
+        </div>
+        <script type="application/json" id="trendData">{{ daily|tojson }}</script>
+    </article>
+    <article class="panel insight glass-3d">
+        <span class="eyebrow">CALCULATION BASIS</span>
+        <h3>Transparent by design.</h3>
+        <p>Carbon is calculated from energy multiplied by your active regional emission factor.</p>
+        <div class="factor">{{ factor }} <small>kg CO₂e / kWh</small></div>
+        <p class="small muted">Starter factor only. Confirm its source and reporting year before formal disclosure.</p>
+        <a href="{{ url_for('web.settings') }}">Review region settings →</a>
+    </article>
+</div>
+<article class="panel">
+    <div class="panel-head">
+        <div>
+            <span class="eyebrow">LATEST RECORDS</span>
+            <h3>Recent activity</h3>
+        </div>
+        <a href="{{ url_for('web.activities') }}">View all →</a>
+    </div>
+    {% if recent %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ACTIVITY</th>
+                    <th>ENERGY</th>
+                    <th>CARBON</th>
+                    <th>TYPE</th>
+                    <th>DATE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in recent %}
+                <tr>
+                    <td>{{ a.description or a.category|title }}</td>
+                    <td>{{ '%.4f'|format(a.energy_kwh) }} kWh</td>
+                    <td>{{ '%.4f'|format(a.carbon_kg) }} kg</td>
+                    <td><span class="pill">{{ a.measurement_type }}</span></td>
+                    <td>{{ a.created_at.strftime('%d %b') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty">No activity recorded yet. Add your first activity to begin tracking.</div>
+    {% endif %}
+</article>
+{% endblock %}
