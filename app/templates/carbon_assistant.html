@@ -4,11 +4,11 @@
 <div class="panel"><span class="eyebrow">GENERATIVE SUSTAINABILITY ASSISTANT</span><h2>Understand your footprint</h2>
 <p>Ask about energy, recorded emissions, efficient algorithms or practical reductions. Responses may be inaccurate; check the dashboard for actual values.</p>
 {% if not configured %}<div class="notice">Generative AI is not configured. The existing <a href="{{ url_for('intelligence.overview') }}">rule-based Carbon Intelligence</a> remains available.</div>{% endif %}
-<p class="small muted">Questions, short conversation history and (only if selected) de-identified account aggregates are sent to the OpenAI API. Do not include secrets or identifying information. Chat history is kept in this page only; refreshing clears it. Provider data policies still apply. Limit: 10 requests per UTC day per account, subject to the shared application quota.</p>
+<p class="small muted">Powered by Google Gemini AI.</p>
 <div id="ctChatHistory" class="stack" aria-live="polite" style="max-height:420px;overflow-y:auto"></div>
 <form id="ctChatForm" class="stack" data-url="{{ url_for('support.ask') }}"><label>Question<textarea id="ctChatQuestion" maxlength="1000" required placeholder="How can I reduce my laptop energy consumption?" rows="3"></textarea></label>
-<label><input type="checkbox" id="ctChatSummary"> Include my 30-day aggregate energy and carbon data</label>
-<label><input type="checkbox" id="ctChatConsent" required> I consent to sending the question and selected data to the AI provider</label>
+<input type="checkbox" id="ctChatSummary" hidden disabled>
+<label> <input type="checkbox" id="ctChatConsent" required> I consent to sending my question and recent conversation history to Google Gemini AI.</label>
 <div><button type="submit" class="btn primary" {% if not configured %}disabled{% endif %}>Ask AI →</button> <button type="button" class="btn ghost" id="ctChatClear">Clear chat</button></div><p id="ctChatStatus" role="status" class="small muted"></p></form></div>
 <script src="{{ url_for('static',filename='js/carbon_assistant.js') }}?v=1" defer></script>
 {% endblock %}
